@@ -14,9 +14,12 @@ extern "C" {
 #endif
 	
 /* TODO: setup i2c/twi */
-#define F_I2C			100000UL// clock i2c
+#define F_I2C			100000UL	// clock i2c
+#ifdef F_CPU
+#define F_CPU			16000000UL	//define the correct CPU clock if the user is using a different setting
+#endif
 #define PSC_I2C			1		// prescaler i2c
-#define SET_TWBR		(F_CPU/F_I2C-16UL)/(PSC_I2C*2UL)
+#define SET_TWBR			((F_CPU/F_I2C-16UL)/(PSC_I2C*2UL))
 
 #include <stdio.h>
 #include <avr/io.h>
