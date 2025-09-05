@@ -8,6 +8,9 @@ int main(void){
   float temperature = 0.0;
   float pressure = 0.0;
   float humidity = 0.0;
+
+  //init I2C
+  i2c_init();
   
   // init sensor
   bme280_init(0);
