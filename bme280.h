@@ -3,6 +3,7 @@
 //  i2c
 //
 //  Created by Michael Köhler on 09.10.17.
+//  Altered by Alessandro Nardinelli on 09.05.25
 //
 //
 
@@ -13,16 +14,16 @@
 extern "C" {
 #endif
     
-#define OVER_0x		0x00 //skipped, output set to 0x80000
-#define OVER_1x		0x01
-#define OVER_2x		0x02
-#define OVER_4x		0x03
-#define OVER_8x		0x04
-#define OVER_16x	0x05
+#define OVER_0x		            0x00                //skipped, output set to 0x80000
+#define OVER_1x		            0x01
+#define OVER_2x		            0x02
+#define OVER_4x		            0x03
+#define OVER_8x		            0x04
+#define OVER_16x	            0x05
 
-#define BME280_FORCED_MODE 0x01
-#define BME280_NORMAL_MODE 0x03
-#define BME280_SLEEP_MODE 0x00
+#define BME280_FORCED_MODE      0x01
+#define BME280_NORMAL_MODE      0x03
+#define BME280_SLEEP_MODE       0x00
 
 #define BME280_STANDBY_500us	0x00
 #define BME280_STANDBY_62500us	0x01
@@ -33,35 +34,32 @@ extern "C" {
 #define BME280_STANDBY_10ms		0x06
 #define BME280_STANDBY_20ms		0x07
 
-#define BME280_IIR_OFF	0x00
-#define BME280_IIR_2x	0x01
-#define BME280_IIR_4x	0x02
-#define BME280_IIR_8x	0x03
-#define BME280_IIR_16x	0x04
+#define BME280_IIR_OFF	        0x00
+#define BME280_IIR_2x	        0x01
+#define BME280_IIR_4x	        0x02
+#define BME280_IIR_8x	        0x03
+#define BME280_IIR_16x	        0x04
 
-#define BME280_SPI_OFF	0x00
-#define BME280_SPI_ON	0x01
+#define BME280_SPI_OFF	        0x00
+#define BME280_SPI_ON	        0x01
 
 /* TODO: configure Sensor */
-    
-// define SDO-pin-logic-level for I2C address (check wiring of your sensor)
-// !!!SDO for sensor 1 asumed to high-level by code, for sensor 2 asumed to low-level by code!!!
-// for example just one sensor is connected,
-#define SENSORS 2
+//define sensor addr (SDO pin low for 0x76 or SDO pin High for 0x77)
+#define SENSOR_ADDR		        0x76
 
 /****** settings *******/
 // default: Standby-Time = 250ms, IIR-Filter = 16x, SPI disable, Oversampling for all Sensors = 16x, Normal Mode
 
 // Standby-Time, IIR-Filter, SPI Disable
-#define BME280_CONFIG		(BME280_STANDBY_250ms << 5)|(BME280_IIR_8x << 2)|(BME280_SPI_OFF)
+#define BME280_CONFIG		    ((BME280_STANDBY_250ms << 5)|(BME280_IIR_8x << 2)|(BME280_SPI_OFF))
 // Temperatur-Sensor
-#define BME280_TEMP_CONFIG	OVER_16x
+#define BME280_TEMP_CONFIG	    OVER_16x
 // Pressure-Sensor
-#define BME280_PRESS_CONFIG	OVER_16x
+#define BME280_PRESS_CONFIG	    OVER_16x
 // Humitity-Sensor
-#define BME280_HUM_CONFIG	OVER_16x
+#define BME280_HUM_CONFIG	    OVER_16x
 // Mode
-#define BME280_MODE_CONFIG	BME280_NORMAL_MODE
+#define BME280_MODE_CONFIG	    BME280_NORMAL_MODE
 
 #include <stdio.h>
 #include "i2c.h"
@@ -71,7 +69,7 @@ typedef struct
     uint16_t dig_T1;
     int16_t  dig_T2;
     int16_t  dig_T3;
-    
+
     uint16_t dig_P1;
     int16_t  dig_P2;
     int16_t  dig_P3;
@@ -96,7 +94,7 @@ enum
     BME280_REGISTER_DIG_T1              = 0x88,
     BME280_REGISTER_DIG_T2              = 0x8A,
     BME280_REGISTER_DIG_T3              = 0x8C,
-    
+
     BME280_REGISTER_DIG_P1              = 0x8E,
     BME280_REGISTER_DIG_P2              = 0x90,
     BME280_REGISTER_DIG_P3              = 0x92,
@@ -114,19 +112,19 @@ enum
     BME280_REGISTER_DIG_H5              = 0xE5,
     BME280_REGISTER_DIG_H6              = 0xE7,
 
-    BME280_REGISTER_CHIPID             = 0xD0,
-    BME280_REGISTER_VERSION            = 0xD1,
-    BME280_REGISTER_SOFTRESET          = 0xE0,
-    
-    BME280_REGISTER_CAL26              = 0xE1,  // R calibration stored in 0xE1-0xF0
-    
-    BME280_REGISTER_CONTROL            = 0xF4,
-    BME280_REGISTER_CONFIG             = 0xF5,
-    BME280_REGISTER_PRESSUREDATA       = 0xF7,
-    BME280_REGISTER_TEMPDATA           = 0xFA,
+    BME280_REGISTER_CHIPID              = 0xD0,
+    BME280_REGISTER_VERSION             = 0xD1,
+    BME280_REGISTER_SOFTRESET           = 0xE0,
 
-    BME280_REGISTER_CONTROLHUMID       = 0xF2,
-    BME280_REGISTER_HUMIDDATA          = 0xFD,
+    BME280_REGISTER_CAL26               = 0xE1,  // R calibration stored in 0xE1-0xF0
+
+    BME280_REGISTER_CONTROL             = 0xF4,
+    BME280_REGISTER_CONFIG              = 0xF5,
+    BME280_REGISTER_PRESSUREDATA        = 0xF7,
+    BME280_REGISTER_TEMPDATA            = 0xFA,
+
+    BME280_REGISTER_CONTROLHUMID        = 0xF2,
+    BME280_REGISTER_HUMIDDATA           = 0xFD,
 
 };
 
@@ -147,8 +145,8 @@ uint16_t read16_LE(uint8_t reg, uint8_t sensor);
 int16_t readS16(uint8_t reg, uint8_t sensor);
 int16_t readS16_LE(uint8_t reg, uint8_t sensor);
 
-volatile uint32_t t_fine[SENSORS];
-volatile bme280_calib_data _bme280_calib[SENSORS];
+volatile uint32_t t_fine[2];
+volatile bme280_calib_data _bme280_calib[2];
 
 #ifdef __cplusplus
 }

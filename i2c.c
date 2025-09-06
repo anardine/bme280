@@ -3,6 +3,7 @@
 //  i2c
 //
 //  Created by Michael Köhler on 09.10.17.
+//  Altered by Alessandro Nardinelli on 09.05.25
 //
 //
 
@@ -16,13 +17,14 @@
 #endif
 
 uint8_t I2C_ErrorCode;
+
 /**********************************************
  Public Function: i2c_init
- 
+
  Purpose: Initialise TWI/I2C interface
- 
+
  Input Parameter: none
- 
+
  Return Value: none
  **********************************************/
 void i2c_init(void){
@@ -41,26 +43,26 @@ void i2c_init(void){
             TWSR = 0x00;
             break;
     }
-    TWBR = (uint8_t)SET_TWBR;
+    TWBR = 32;
     // enable
     TWCR = (1 << TWEN);
 }
+
 /**********************************************
  Public Function: i2c_start
- 
+
  Purpose: Start TWI/I2C interface
- 
+
  Input Parameter:
  - uint8_t i2c_addr: Adress of reciever
- 
+
  Return Value: none
  **********************************************/
 void i2c_start(uint8_t i2c_addr){
     // i2c start
     TWCR = (1 << TWINT)|(1 << TWSTA)|(1 << TWEN);
 	uint16_t timeout = F_CPU/F_I2C*2.0;
-    while((TWCR & (1 << TWINT)) == 0 &&
-		timeout !=0){
+    while((TWCR & (1 << TWINT)) == 0 && timeout !=0){
 		timeout--;
 		if(timeout == 0){
 			I2C_ErrorCode |= (1 << I2C_START);
@@ -71,8 +73,7 @@ void i2c_start(uint8_t i2c_addr){
     TWDR = i2c_addr;
     TWCR = (1 << TWINT)|( 1 << TWEN);
     timeout = F_CPU/F_I2C*2.0;
-    while((TWCR & (1 << TWINT)) == 0 &&
-		  timeout !=0){
+    while((TWCR & (1 << TWINT)) == 0 && timeout !=0){
 		timeout--;
 		if(timeout == 0){
 			I2C_ErrorCode |= (1 << I2C_SENDADRESS);
@@ -82,11 +83,11 @@ void i2c_start(uint8_t i2c_addr){
 }
 /**********************************************
  Public Function: i2c_stop
- 
+
  Purpose: Stop TWI/I2C interface
- 
+
  Input Parameter: none
- 
+
  Return Value: none
  **********************************************/
 void i2c_stop(void){
@@ -95,20 +96,19 @@ void i2c_stop(void){
 }
 /**********************************************
  Public Function: i2c_byte
- 
+
  Purpose: Send byte at TWI/I2C interface
- 
+
  Input Parameter:
  - uint8_t byte: Byte to send to reciever
- 
+
  Return Value: none
  **********************************************/
 void i2c_byte(uint8_t byte){
     TWDR = byte;
     TWCR = (1 << TWINT)|( 1 << TWEN);
     uint16_t timeout = F_CPU/F_I2C*2.0;
-    while((TWCR & (1 << TWINT)) == 0 &&
-		  timeout !=0){
+    while((TWCR & (1 << TWINT)) == 0 && timeout !=0){
 		timeout--;
 		if(timeout == 0){
 			I2C_ErrorCode |= (1 << I2C_BYTE);
@@ -118,11 +118,11 @@ void i2c_byte(uint8_t byte){
 }
 /**********************************************
  Public Function: i2c_readAck
- 
+
  Purpose: read acknowledge from TWI/I2C Interface
- 
+
  Input Parameter: none
- 
+
  Return Value: uint8_t
   - TWDR: recieved value at TWI/I2C-Interface, 0 at timeout
   - 0:    Error at read
@@ -130,8 +130,7 @@ void i2c_byte(uint8_t byte){
 uint8_t i2c_readAck(void){
     TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWEA);
     uint16_t timeout = F_CPU/F_I2C*2.0;
-    while((TWCR & (1 << TWINT)) == 0 &&
-		  timeout !=0){
+    while((TWCR & (1 << TWINT)) == 0 && timeout !=0){
 		timeout--;
 		if(timeout == 0){
 			I2C_ErrorCode |= (1 << I2C_READACK);
@@ -143,11 +142,11 @@ uint8_t i2c_readAck(void){
 
  /**********************************************
  Public Function: i2c_readNAck
- 
+
  Purpose: read non-acknowledge from TWI/I2C Interface
- 
+
  Input Parameter: none
- 
+
  Return Value: uint8_t
   - TWDR: recieved value at TWI/I2C-Interface
   - 0:    Error at read
@@ -155,8 +154,7 @@ uint8_t i2c_readAck(void){
 uint8_t i2c_readNAck(void){
     TWCR = (1<<TWINT)|(1<<TWEN);
     uint16_t timeout = F_CPU/F_I2C*2.0;
-    while((TWCR & (1 << TWINT)) == 0 &&
-		  timeout !=0){
+    while((TWCR & (1 << TWINT)) == 0 && timeout !=0){
 		timeout--;
 		if(timeout == 0){
 			I2C_ErrorCode |= (1 << I2C_READNACK);
@@ -165,6 +163,7 @@ uint8_t i2c_readNAck(void){
 	};
     return TWDR;
 }
+
 #else
 #error "Micorcontroller not supported now!"
 #endif

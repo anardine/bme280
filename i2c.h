@@ -3,6 +3,7 @@
 //  i2c
 //
 //  Created by Michael Köhler on 09.10.17.
+//  Altered by Alessandro Nardinelli on 09.05.25
 //
 //
 
